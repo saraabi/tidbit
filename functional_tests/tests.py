@@ -36,9 +36,12 @@ class NewVisitorTest(LiveServerTestCase):
         # She types "I bought peacock feathers from Azerbaijan" into a text box
         inputbox.send_keys('I bought peacock feathers from Azerbaijan')
 
-        # When she hits enter, the page updates, and now the page lists her story
+        # When she hits enter, she is taken to a new URL, and now the page lists her story as
+        # an item in a table.
         inputbox.send_keys(Keys.ENTER)
         # time.sleep(10)
+        fulan_story_url = self.browser.current_url
+        self.assertRegex(fulan_story_url, '/stories/.+')
         self.check_for_row_in_story_table('I bought peacock feathers from Azerbaijan')
 
         # There is still a text box inviting her to change her story. She writes
@@ -51,9 +54,35 @@ class NewVisitorTest(LiveServerTestCase):
         self.check_for_row_in_story_table('I bought peacock feathers from Azerbaijan')
         self.check_for_row_in_story_table('I bought two bright red peacock feathers from a chicken farmer in Azerbaijan')
 
-        # Fulan wonders whether the site will remember her stories. Then she sees that the site
-        # has generated a unique URL for her -- this is some explanatory text to that effect.
+        # Now a new user, Francis, comes along to the site.
 
+        ## We use a new browser session to make sure that no information of Fulan's is
+        ## coming through from cookies etc.
+        self.browser.quit()
+        self.browser - webdriver.Firefox()
+
+        # Francis visits the homepage. There is no sign of Fulan's stories.
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('I bought peacock feathers from Azerbaijan', page_text)
+        self.assertNotIn('I bought two bright red peacock feathers from a chicken farmer in Azerbaijan', page_text)
+
+        # Francis starts a new list by entering a new item. He is less interesting than Fulan.
+        inputbox - self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('I bought milk')
+        inputbox.send_keys(Keys.ENTER)
+
+        # Francis gets his own unique URL
+        francis_story_url = self.browser.current_url
+        self.assertRegex(francis_story_url, '/stories/.+')
+        self.assertNotEqual(francis_story_url, fulan_story_url)
+
+        # Again, there is no trace of Fulan's list
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('I bought peacock feathers from Azerbaijan', page_text)
+        self.assertIn('I bought milk', page_text)
+
+        # Satisfied, they both go back to sleep.
 
         self.fail('Finish the test!')
 
