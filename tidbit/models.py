@@ -3,11 +3,11 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.template.defaultfilters import slugify
-# from tidbit.functions import uid_generator
+from tidbit.functions import uid_generator
 
 class Entry(models.Model):
 	uid = models.CharField(max_length=10)
-	user = models.ForeignKey(User)
+	user = models.ForeignKey(User, blank=True, null=True)
 	text = models.CharField(max_length=300)
 	date_created = models.DateField(auto_now_add=True)
 	timestamp = models.DateTimeField(auto_now=True)

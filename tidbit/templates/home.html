@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>Daily Personal Stories</title>
+    </head>
+    <body>
+        <h1> Your Daily Stories </h1>
+        <form method="POST">
+            <input name="item_text" id="id_new_item" placeholder="Enter the story of your day" />
+            {% csrf_token %}
+        </form>
+
+
+        <table id="id_story_table">
+            {% for item in items %}
+                <tr>
+                    <td>
+                        {{ item.text }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
