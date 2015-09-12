@@ -9,6 +9,7 @@ class Entry(models.Model):
 	uid = models.CharField(max_length=10)
 	user = models.ForeignKey(User, blank=True, null=True)
 	text = models.CharField(max_length=300)
+	list = models.ForeignKey('List', default=None)
 	date_created = models.DateField(auto_now_add=True)
 	timestamp = models.DateTimeField(auto_now=True)
 	category = models.CharField(max_length=100, blank=True, null=True)
@@ -22,6 +23,8 @@ class Entry(models.Model):
 			self_uid = uid_generator()
 		super(Entry, self).save(*args, **kwargs)
 
+class List(models.Model):
+	pass
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User)
