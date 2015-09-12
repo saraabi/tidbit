@@ -19,42 +19,6 @@ class HomePageTest(TestCase):
         expected_html = render_to_string('home.html')
         self.assertEqual(response.content.decode(), expected_html)
 
-    def test_home_page_can_save_a_POST_request(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['item_text'] = 'A new story item'
-
-        response = home_page(request)
-
-        self.assertEqual(Entry.objects.count(), 1)
-        new_item = Entry.objects.first()
-        self.assertEqual(new_item.text, 'A new story item')
-
-    def test_home_page_redirects_after_POST(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['item_text'] = 'A new story item'
-
-        response = home_page(request)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
-
-    def test_home_page_only_saves_items_when_necessary(self):
-        request = HttpRequest()
-        home_page(request)
-        self.assertEqual(Entry.objects.count(),0)
-
-    def test_home_page_displays_all_story_items(self):
-        Entry.objects.create(text='entry1')
-        Entry.objects.create(text='entry2')
-
-        request = HttpRequest()
-        response = home_page(request)
-
-        self.assertIn('entry1', response.content.decode())
-        self.assertIn('entry2', response.content.decode())
-
 class EntryModelTest(TestCase):
 
     def test_saving_and_retrieving_items(self):
@@ -76,3 +40,39 @@ class EntryModelTest(TestCase):
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text, 'The first (ever) story entry')
         self.assertEqual(second_saved_item.text, 'Second story')
+
+class ListViewTest(TestCase):
+
+    def test_uses_list_template(self):
+        response = self.client.get('/lists/the-only-story-in-the-world/')
+        self.assertTemplateUsed(response, 'list.html')
+
+    def test_displays_all_items(self):
+        Entry.objects.create(text='entry1')
+        Entry.objects.create(text='entry2')
+
+        response = self.client.get('/lists/the-only-story-in-the-world/')
+
+        self.assertContains(response, 'entry1')
+        self.assertContains(response, 'entry2')
+
+class NewListTest(TestCase):
+
+    def test_saving_a_POST_request(self):
+        self.client.post(
+            '/lists/new',
+            data={'item_text': 'A new story item'}
+        )
+
+        self.assertEqual(Entry.objects.count(), 1)
+        new_item = Entry.objects.first()
+        self.assertEqual(new_item.text, 'A new story item')
+
+    def test_redirects_after_POST(self):
+        response = self.client.post(
+            '/lists/new',
+            data={'item_text': 'A new list entry'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/lists/the-only-story-in-the-world/')

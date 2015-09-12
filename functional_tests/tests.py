@@ -41,7 +41,7 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
         # time.sleep(10)
         fulan_story_url = self.browser.current_url
-        self.assertRegex(fulan_story_url, '/stories/.+')
+        self.assertRegexpMatches(fulan_story_url, '/lists/.+')
         self.check_for_row_in_story_table('I bought peacock feathers from Azerbaijan')
 
         # There is still a text box inviting her to change her story. She writes
@@ -59,7 +59,7 @@ class NewVisitorTest(LiveServerTestCase):
         ## We use a new browser session to make sure that no information of Fulan's is
         ## coming through from cookies etc.
         self.browser.quit()
-        self.browser - webdriver.Firefox()
+        self.browser = webdriver.Firefox()
 
         # Francis visits the homepage. There is no sign of Fulan's stories.
         self.browser.get(self.live_server_url)
@@ -68,13 +68,13 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertNotIn('I bought two bright red peacock feathers from a chicken farmer in Azerbaijan', page_text)
 
         # Francis starts a new list by entering a new item. He is less interesting than Fulan.
-        inputbox - self.browser.find_element_by_id('id_new_item')
+        inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('I bought milk')
         inputbox.send_keys(Keys.ENTER)
 
         # Francis gets his own unique URL
         francis_story_url = self.browser.current_url
-        self.assertRegex(francis_story_url, '/stories/.+')
+        self.assertRegexpMatches(francis_story_url, '/lists/.+')
         self.assertNotEqual(francis_story_url, fulan_story_url)
 
         # Again, there is no trace of Fulan's list
