@@ -27,13 +27,13 @@ class ListAndEntryModelsTest(TestCase):
         # user = User.objects.get(username='saraabi')
         first_item = Entry()
         first_item.text = 'The first (ever) story entry'
-        first_item.list = list_
+        first_item.story_list = list_
         # first_tiem.user = user
         first_item.save()
 
         second_item = Entry()
         second_item.text = "Second story"
-        second_item.list = list_
+        second_item.story_list = list_
         # second_item.user = user
         second_item.save()
 
@@ -46,9 +46,9 @@ class ListAndEntryModelsTest(TestCase):
         first_saved_item = saved_items[0]
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text, 'The first (ever) story entry')
-        self.assertEqual(first_saved_item.list, list_)
+        self.assertEqual(first_saved_item.story_list, list_)
         self.assertEqual(second_saved_item.text, 'Second story')
-        self.assertEqual(second_saved_item.list, list_)
+        self.assertEqual(second_saved_item.story_list, list_)
 
 class ListViewTest(TestCase):
 
@@ -59,11 +59,11 @@ class ListViewTest(TestCase):
 
     def test_displays_only_items_for_that_list(self):
         correct_list = List.objects.create()
-        Entry.objects.create(text='entry1', list=correct_list)
-        Entry.objects.create(text='entry2', list=correct_list)
+        Entry.objects.create(text='entry1', story_list=correct_list)
+        Entry.objects.create(text='entry2', story_list=correct_list)
         other_list = List.objects.create()
-        Entry.objects.create(text='other entry1', list=other_list)
-        Entry.objects.create(text='other entry2', list=other_list)
+        Entry.objects.create(text='other entry1', story_list=other_list)
+        Entry.objects.create(text='other entry2', story_list=other_list)
 
         response = self.client.get('/lists/%d/' % (correct_list.id,))
 
@@ -112,7 +112,7 @@ class NewEntryTest(TestCase):
         self.assertEqual(Entry.objects.count(),1)
         new_item = Entry.objects.first()
         self.assertEqual(new_item.text, 'A new entry for an existing list')
-        self.assertEqual(new_item.list, correct_list)
+        self.assertEqual(new_item.story_list, correct_list)
 
     def test_redirects_to_list_view(self):
         other_list = List.objects.create()

@@ -2,10 +2,10 @@
 
 {% block header_text %}Your Daily Personal Stories{% endblock %}
 
-{% block form_action %}/lists/new{% endblock %}
+{% block form_action %}/lists/{{ list.id }}/add_item{% endblock %}
 
 {% block table %}
-    <table id="id_list_table">
+    <table id="id_list_table" class="table">
         {% for item in list.entry_set.all %}
             <tr>
                 <td>

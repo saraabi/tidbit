@@ -1,10 +1,25 @@
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import sys
 import unittest
 import time
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = 'http://' + arg.split('=')[1]
+                return
+        super(NewVisitorTest, cls).setUpClass()
+        cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url == cls.live_server_url:
+            super(NewVisitorTest, cls).tearDownClass()
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -13,13 +28,13 @@ class NewVisitorTest(LiveServerTestCase):
         self.browser.quit()
 
     def check_for_row_in_story_table(self, row_text):
-        table = self.browser.find_element_by_id('id_story_table')
+        table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')        
         self.assertIn(row_text, [row.text for row in rows])
 
     def test_can_start_a_story_and_retrieve_it_later(self):
         # Fulan has head about a cool new online personal story app. She checks it out:
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
 
         # She notices that the page title and header mention stories
         self.assertIn('Stories', self.browser.title)
@@ -39,7 +54,7 @@ class NewVisitorTest(LiveServerTestCase):
         # When she hits enter, she is taken to a new URL, and now the page lists her story as
         # an item in a table.
         inputbox.send_keys(Keys.ENTER)
-        # time.sleep(10)
+        time.sleep(10)
         fulan_story_url = self.browser.current_url
         self.assertRegexpMatches(fulan_story_url, '/lists/.+')
         self.check_for_row_in_story_table('I bought peacock feathers from Azerbaijan')
@@ -62,7 +77,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.browser = webdriver.Firefox()
 
         # Francis visits the homepage. There is no sign of Fulan's stories.
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('I bought peacock feathers from Azerbaijan', page_text)
         self.assertNotIn('I bought two bright red peacock feathers from a chicken farmer in Azerbaijan', page_text)
@@ -86,7 +101,7 @@ class NewVisitorTest(LiveServerTestCase):
 
     def test_layout_and_styling(self):
         # Fulan goes to the home page
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.browser.set_window_size(1024, 768)
 
         # She notices the input box is nicely centered

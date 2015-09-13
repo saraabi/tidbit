@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-from django.conf import settings
 
 
 class Migration(migrations.Migration):
@@ -12,9 +11,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='entry',
-            name='user',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        migrations.RemoveField(
+            model_name='list',
+            name='name',
+        ),
+        migrations.RemoveField(
+            model_name='list',
+            name='uid',
         ),
     ]

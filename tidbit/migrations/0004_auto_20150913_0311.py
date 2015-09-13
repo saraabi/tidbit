@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tidbit', '0003_list'),
+        ('tidbit', '0003_auto_20150913_0305'),
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='entry',
-            name='list',
-            field=models.ForeignKey(default=None, to='tidbit.List'),
+            name='story_list',
+            field=models.ForeignKey(blank=True, to='tidbit.List', null=True),
         ),
     ]

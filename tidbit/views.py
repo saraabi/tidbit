@@ -15,10 +15,10 @@ def view_list(request, list_id):
 
 def new_list(request):
     list_ = List.objects.create()
-    Entry.objects.create(text=request.POST['item_text'], list=list_)
+    Entry.objects.create(text=request.POST['item_text'], story_list=list_)
     return redirect('/lists/%d/' % (list_.id,))
 
 def add_item(request, list_id):
     list_ = List.objects.get(id=list_id)
-    Entry.objects.create(text=request.POST['item_text'], list=list_)    
+    Entry.objects.create(text=request.POST['item_text'], story_list=list_)    
     return redirect('/lists/%d/' % (list_.id,))
